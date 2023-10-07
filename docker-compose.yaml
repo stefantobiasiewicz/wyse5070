@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  portainer:
+    #iksdeiksdeiksde
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    ports:
+      - "9443:9443"
+    volumes:
+      - ./portainer:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    networks:
+      enviroment:
+        ipv4_address: 172.20.0.5
+  database:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    volumes:
+      - ./postgres/create-databases.sh:/docker-entrypoint-initdb.d/create-databases.sh
+      - ./postgres/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      DATABASES: iot_system wyse5070
+    networks:
+      enviroment:
+        ipv4_address: 172.20.0.10
+networks:
+  enviroment:
+    driver: 'bridge'
+    ipam:
+      config:
+        - subnet: "172.20.0.0/24"
+          gateway: "172.20.0.1"
